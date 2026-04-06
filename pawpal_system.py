@@ -319,6 +319,35 @@ class Scheduler:
         return next_task
 
     # ------------------------------------------------------------------
+    # Conflict detection
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def detect_conflicts(tasks: list[Task]) -> list[tuple[Task, Task]]:
+        """Return every pair of tasks whose scheduled time intervals overlap.
+
+        Two tasks conflict when one starts before the other has finished:
+            task_a.start < task_b.start + task_b.duration  AND
+            task_b.start < task_a.start + task_a.duration
+
+        Tasks with no scheduled_time are skipped — they have no interval to
+        compare. Returns an empty list when there are no conflicts.
+        """
+        timed = [t for t in tasks if t.scheduled_time is not None]
+        conflicts: list[tuple[Task, Task]] = []
+
+        for i, a in enumerate(timed):
+            a_start = _time_to_minutes(a.scheduled_time)
+            a_end   = a_start + a.duration_minutes
+            for b in timed[i + 1:]:
+                b_start = _time_to_minutes(b.scheduled_time)
+                b_end   = b_start + b.duration_minutes
+                if a_start < b_end and b_start < a_end:
+                    conflicts.append((a, b))
+
+        return conflicts
+
+    # ------------------------------------------------------------------
     # Core scheduling
     # ------------------------------------------------------------------
 

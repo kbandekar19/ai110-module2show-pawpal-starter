@@ -38,6 +38,36 @@ Tasks are sorted high-to-low by priority. Within the same priority tier, shorter
 **Recurring tasks**
 `Task.next_occurrence()` uses Python's `timedelta` to compute the next due date — `+1 day` for daily tasks, `+7 days` for weekly tasks, and `None` for `as_needed` tasks. `Scheduler.complete_task(task, pet)` marks a task done and immediately registers the next occurrence on the pet, so it appears in the following day's generated plan with no manual intervention.
 
+## Testing PawPal+
+
+Run the full test suite from the project root:
+
+```bash
+python -m pytest
+```
+
+### What the tests cover
+
+39 automated tests across 9 areas:
+
+| Area | What is verified |
+|---|---|
+| Task completion | `mark_complete()` flips status; new tasks start incomplete |
+| Pet task management | `add_task`, `remove_task`, and `get_tasks()` returns a safe copy |
+| Priority sorting | High before low; same-priority tasks ordered shortest-first; all 3 tiers correct |
+| Time sorting | Chronological HH:MM order; unscheduled tasks sort to end; all-None list doesn't crash |
+| Filtering | Pending/completed split; filter by pet name; unknown pet name returns `[]` |
+| Recurring tasks | Daily +1 day, weekly +7 days, `as_needed` → None; fresh copy starts incomplete; attributes preserved |
+| Plan generation | Pending tasks scheduled; completed skipped; overlong tasks go to unscheduled; time slots assigned; `total_duration` stays in sync |
+| Conflict detection | Overlapping intervals flagged; adjacent tasks not flagged; same start time caught; unscheduled tasks ignored; scheduler's own output is always conflict-free |
+| Edge cases | No tasks, no pets, all done → empty plan; invalid `edit` field raises `ValueError` |
+
+### Confidence level
+
+**4 / 5 stars**
+
+The core scheduling logic — priority sorting, time-slot assignment, recurring task creation, and conflict detection — is fully covered by automated tests and all 39 pass. The one star withheld reflects areas not yet tested: owner preference handling has no tests, the Streamlit UI layer is untested (no browser automation), and recurring task behaviour across multiple days (e.g. a weekly task completing twice in one week) has not been exercised. These would be the next tests to write.
+
 ## Getting started
 
 ### Setup
