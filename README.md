@@ -29,9 +29,11 @@ A smart daily pet care planner built with Python and Streamlit. PawPal+ helps bu
 
 ## Demo
 
-<a href="/course_images/ai110/pawpal_screenshot.png" target="_blank">
-  <img src='/course_images/ai110/pawpal_screenshot.png' title='PawPal App' width='' alt='PawPal App' class='center-block' />
-</a>
+![PawPal+ Dashboard](images/pawpal_screenshot.png)
+
+## System Design (UML)
+
+![PawPal+ UML Class Diagram](images/uml_final.png)
 
 ---
 
