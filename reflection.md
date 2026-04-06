@@ -7,6 +7,79 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+**Core User Actions**
+
+The three core actions a user can perform in PawPal+:
+
+1. **Enter pet and owner information** — The user provides details about their pet (species, breed, age, energy level, health needs) and themselves (name, contact info, availability preferences). This data forms the foundation for all scheduling decisions.
+
+2. **Generate an activity plan** — Based on the user's available time, task priorities, and owner preferences, the system automatically creates a personalized activity schedule for the pet. The scheduler balances constraints like duration, frequency, and priority to produce a realistic, optimized plan.
+
+3. **Add or edit tasks** — The user can manually add new tasks (e.g., a vet appointment, a grooming session) or edit existing ones in the activity plan, giving them direct control to adjust, reprioritize, or customize what the scheduler produces.
+
+**UML Class Diagram**
+
+```mermaid
+classDiagram
+    class Owner {
+        +String name
+        +int available_minutes
+        +dict preferences
+        +get_available_time() int
+        +update_preferences(prefs) None
+    }
+
+    class Pet {
+        +String name
+        +String species
+        +String breed
+        +int age
+        +String energy_level
+        +String health_notes
+        +get_profile() dict
+        +needs_medication() bool
+    }
+
+    class Task {
+        +String title
+        +int duration_minutes
+        +String priority
+        +String category
+        +String scheduled_time
+        +String notes
+        +is_high_priority() bool
+        +to_dict() dict
+        +edit(field, value) None
+    }
+
+    class Scheduler {
+        +Owner owner
+        +Pet pet
+        +List~Task~ tasks
+        +ActivityPlan plan
+        +generate_plan() ActivityPlan
+        +fits_in_time(task) bool
+        +explain_plan() str
+    }
+
+    class ActivityPlan {
+        +String date
+        +List~Task~ scheduled_tasks
+        +int total_duration
+        +List~Task~ unscheduled_tasks
+        +display() str
+        +add_task(task) None
+        +remove_task(task) None
+        +get_summary() dict
+    }
+
+    Owner "1" --> "1" Pet : owns
+    Owner "1" --> "1" Scheduler : uses
+    Scheduler "1" --> "many" Task : schedules
+    Scheduler "1" --> "1" ActivityPlan : produces
+    ActivityPlan "1" --> "many" Task : contains
+```
+
 **b. Design changes**
 
 - Did your design change during implementation?
